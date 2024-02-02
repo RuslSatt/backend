@@ -1,16 +1,11 @@
-import { pool } from '../db.js';
+import UserService from '../services/user.service.js';
 
 class UserController {
     async create(req, res) {
         try {
-            const { name, surname } = req.body;
+            const user = await UserService.create(req.body);
 
-            const user = await pool.query(`INSERT INTO person (name, surname) values ($1, $2) RETURNING *`, [
-                name,
-                surname,
-            ]);
-
-            res.json(user.rows[0]);
+            res.json(user);
         } catch (e) {
             res.status(500).json(e);
         }
@@ -18,8 +13,9 @@ class UserController {
 
     async get(req, res) {
         try {
-            const users = await pool.query('SELECT * FROM person');
-            res.json(users.rows);
+            const users = await UserService.get(req.body);
+
+            res.json(users);
         } catch (e) {
             res.status(500).json(e);
         }
@@ -28,8 +24,9 @@ class UserController {
     async getById(req, res) {
         try {
             const id = req.params.id;
-            const user = await pool.query('SELECT * FROM person where id = $1', [id]);
-            res.json(user.rows[0]);
+            const user = await UserService.getById(id);
+
+            res.json(user);
         } catch (e) {
             res.status(500).json(e);
         }
@@ -37,13 +34,9 @@ class UserController {
 
     async put(req, res) {
         try {
-            const { id, name, surname } = req.body;
-            const user = await pool.query('UPDATE person set name = $1, surname = $2 where id = $3 RETURNING *', [
-                name,
-                surname,
-                id,
-            ]);
-            res.json(user.rows[0]);
+            const user = await UserService.put(req.body);
+
+            res.json(user);
         } catch (error) {
             res.status(500).json(e);
         }
@@ -52,8 +45,9 @@ class UserController {
     async delete(req, res) {
         try {
             const id = req.params.id;
-            const user = await pool.query('DELETE FROM person where id = $1', [id]);
-            res.json(user.rows[0]);
+            const user = await UserService.delete(id);
+
+            res.json(user);
         } catch (e) {
             res.status(500).json(e);
         }
